@@ -3,29 +3,38 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour {
-
+public class Enemy : MonoBehaviour
+{
+    [Header("Enemy Stats")]
     [SerializeField] float health = 100;
+    [SerializeField] int scoreValue = 150;
+
+    [Header("Shooting")]
     [SerializeField] float shotCounter; //Serialized for debugging
     [SerializeField] float minTimeBetweenShots = 0.2f; //Serialized for debugging
     [SerializeField] float maxTimeBetweenShots = 3f; //Serialized for debugging
     [SerializeField] GameObject cannonBallPrefab;
     [SerializeField] float projectileSpeed = 15f;
+    [SerializeField] GameObject deathVFX;
+    [SerializeField] float durationOfExplosion = 1f;
+
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         shotCounter = UnityEngine.Random.Range(minTimeBetweenShots, maxTimeBetweenShots);
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
         CountDownAndShoot();
-	}
+    }
 
     private void CountDownAndShoot()
     {
         shotCounter -= Time.deltaTime;
-        if(shotCounter <= 0f)
+        if (shotCounter <= 0f)
         {
             Fire();
             shotCounter = UnityEngine.Random.Range(minTimeBetweenShots, maxTimeBetweenShots);
@@ -56,7 +65,16 @@ public class Enemy : MonoBehaviour {
         damageDealer.Hit();
         if (health <= 0)
         {
-            Destroy(gameObject);
+            Die();
         }
+    }
+
+    private void Die()
+    {
+        FindObjectOfType<GameSession>().AddToScore(scoreValue);
+        GameObject explosion = Instantiate(deathVFX, transform.position, transform.rotation);
+        gameObject.GetComponent<Rigidbody2D>().velocity = Vector3.zero;
+        Destroy(gameObject);
+        Destroy(explosion, durationOfExplosion);
     }
 }

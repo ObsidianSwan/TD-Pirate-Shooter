@@ -91,9 +91,18 @@ public class Player : MonoBehaviour {
     {
         health -= damageDealer.GetDamage();
         damageDealer.Hit();
+
+        FindObjectOfType<GameSession>().SetHealth(health);
+
         if (health <= 0)
         {
+            FindObjectOfType<Level>().LoadGameOver();
             Destroy(gameObject);
         }
+    }
+
+    public int GetHealth()
+    {
+        return health;
     }
 }
